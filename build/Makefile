@@ -48,10 +48,10 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /Applications/CMake.app/Contents/bin/cmake
+CMAKE_COMMAND = /opt/homebrew/bin/cmake
 
 # The command to remove a file.
-RM = /Applications/CMake.app/Contents/bin/cmake -E rm -f
+RM = /opt/homebrew/bin/cmake -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
@@ -68,7 +68,7 @@ CMAKE_BINARY_DIR = /Users/chang/seal_project/build
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake cache editor..."
-	/Applications/CMake.app/Contents/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/opt/homebrew/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -78,7 +78,7 @@ edit_cache/fast: edit_cache
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake to regenerate build system..."
-	/Applications/CMake.app/Contents/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/opt/homebrew/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -116,6 +116,43 @@ depend:
 	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
+#=============================================================================
+# Target rules for targets named simple_encrypt
+
+# Build rule for target.
+simple_encrypt: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 simple_encrypt
+.PHONY : simple_encrypt
+
+# fast build rule for target.
+simple_encrypt/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple_encrypt.dir/build.make CMakeFiles/simple_encrypt.dir/build
+.PHONY : simple_encrypt/fast
+
+simple_encrypt.o: simple_encrypt.cpp.o
+.PHONY : simple_encrypt.o
+
+# target to build an object file
+simple_encrypt.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple_encrypt.dir/build.make CMakeFiles/simple_encrypt.dir/simple_encrypt.cpp.o
+.PHONY : simple_encrypt.cpp.o
+
+simple_encrypt.i: simple_encrypt.cpp.i
+.PHONY : simple_encrypt.i
+
+# target to preprocess a source file
+simple_encrypt.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple_encrypt.dir/build.make CMakeFiles/simple_encrypt.dir/simple_encrypt.cpp.i
+.PHONY : simple_encrypt.cpp.i
+
+simple_encrypt.s: simple_encrypt.cpp.s
+.PHONY : simple_encrypt.s
+
+# target to generate assembly for a file
+simple_encrypt.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple_encrypt.dir/build.make CMakeFiles/simple_encrypt.dir/simple_encrypt.cpp.s
+.PHONY : simple_encrypt.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -124,6 +161,10 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... simple_encrypt"
+	@echo "... simple_encrypt.o"
+	@echo "... simple_encrypt.i"
+	@echo "... simple_encrypt.s"
 .PHONY : help
 
 

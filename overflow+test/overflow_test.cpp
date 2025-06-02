@@ -1,7 +1,7 @@
 #include "seal/seal.h"
 #include <iostream>
 #include <vector>
-#include <iomanip>  // for setw
+#include <iomanip>  
 
 using namespace std;
 using namespace seal;

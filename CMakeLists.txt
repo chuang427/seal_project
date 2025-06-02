@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-project(seal_overflow_test)
+project(seal_project)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -13,11 +13,14 @@ set(SEAL_INCLUDE_DIRS
 )
 set(SEAL_LIBRARIES "${SEAL_ROOT}/build/lib/libseal-4.1.a")
 
-# Add executable
-add_executable(overflow_test overflow_test.cpp)
+# Add executables
+add_executable(simple_encrypt simple_encrypt/simple_encrypt.cpp)
+add_executable(overflow_test overflow+test/overflow_test.cpp)
 
-# Add include directories
+# Add include directories for both executables
+target_include_directories(simple_encrypt PRIVATE ${SEAL_INCLUDE_DIRS})
 target_include_directories(overflow_test PRIVATE ${SEAL_INCLUDE_DIRS})
 
-# Link against SEAL
-target_link_libraries(overflow_test ${SEAL_LIBRARIES})
+# Link against SEAL for both executables
+target_link_libraries(simple_encrypt ${SEAL_LIBRARIES})
+target_link_libraries(overflow_test ${SEAL_LIBRARIES}) 

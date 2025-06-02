@@ -1,24 +1,26 @@
-cmake_minimum_required(VERSION 3.13)
-project(seal_project CXX)
+cmake_minimum_required(VERSION 3.12)
+project(seal_project)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Paths to SEAL and GSL (adjust if needed)
-set(SEAL_SOURCE_DIR "/Users/chang/SEAL")
-set(SEAL_BUILD_DIR "/Users/chang/SEAL/build")
-set(GSL_DIR "/Users/chang/GSL/include")
-
-# Include headers
-include_directories(
-    ${SEAL_SOURCE_DIR}/native/src
-    ${SEAL_BUILD_DIR}/native/src
-    ${GSL_DIR}
+# Add SEAL directory
+set(SEAL_ROOT "/Users/chang/SEAL")
+set(SEAL_INCLUDE_DIRS 
+    "${SEAL_ROOT}/native/src"
+    "${SEAL_ROOT}/build/native/src"
+    "${SEAL_ROOT}/build/thirdparty/msgsl-src/include"
 )
+set(SEAL_LIBRARIES "${SEAL_ROOT}/build/lib/libseal-4.1.a")
 
-# Add your executable
-add_executable(simple_encrypt simple_encrypt.cpp)
+# Add executables
+add_executable(simple_encrypt simple_encrypt/simple_encrypt.cpp)
+add_executable(overflow_test overflow+test/overflow_test.cpp)
 
-# Link SEAL static library
-target_link_libraries(simple_encrypt
-    ${SEAL_BUILD_DIR}/lib/libseal-4.1.a
-)
+# Add include directories for both executables
+target_include_directories(simple_encrypt PRIVATE ${SEAL_INCLUDE_DIRS})
+target_include_directories(overflow_test PRIVATE ${SEAL_INCLUDE_DIRS})
+
+# Link against SEAL for both executables
+target_link_libraries(simple_encrypt ${SEAL_LIBRARIES})
+target_link_libraries(overflow_test ${SEAL_LIBRARIES}) 

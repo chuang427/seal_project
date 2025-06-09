@@ -18,13 +18,16 @@ set(SEAL_LIBRARIES "${SEAL_ROOT}/build/lib/libseal-4.1.a")
 add_executable(simple_encrypt simple_encrypt/simple_encrypt.cpp)
 add_executable(overflow_test overflow+test/overflow_test.cpp)
 add_executable(noise_budget_attack multiplication_injection/noise_budget_attack.cpp)
+add_executable(multiply_by_2_test multiply_by_2_attack/multiply_by_2_test.cpp)
 
 # Add include directories for all executables
 target_include_directories(simple_encrypt PRIVATE ${SEAL_INCLUDE_DIRS})
 target_include_directories(overflow_test PRIVATE ${SEAL_INCLUDE_DIRS})
 target_include_directories(noise_budget_attack PRIVATE ${SEAL_INCLUDE_DIRS})
+target_include_directories(multiply_by_2_test PRIVATE ${SEAL_INCLUDE_DIRS})
 
 # Link against SEAL for all executables
 target_link_libraries(simple_encrypt ${SEAL_LIBRARIES})
 target_link_libraries(overflow_test ${SEAL_LIBRARIES})
-target_link_libraries(noise_budget_attack ${SEAL_LIBRARIES}) 
+target_link_libraries(noise_budget_attack ${SEAL_LIBRARIES})
+target_link_libraries(multiply_by_2_test ${SEAL_LIBRARIES}) 

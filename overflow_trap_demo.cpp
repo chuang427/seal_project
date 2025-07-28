@@ -213,10 +213,10 @@ int main() {
         try {
             decryptor.decrypt(attacked_add, dec_attack_add);
             curr_val = dec_attack_add[0];
-            if (curr_val != expected_add + (i * value2)) { status = "CORRUPTED"; overflow_add = true; }
+            if (curr_val != expected_add) { status = "CORRUPTED"; overflow_add = true; }
             else if (curr_noise < add_threshold) { status = "DANGER"; overflow_add = true; }
         } catch (...) { status = "ERROR"; curr_val = 0; overflow_add = true; }
-        print_operation_status("Add Attack #" + to_string(i), curr_val, expected_add + (i * value2), curr_noise, add_noise, status);
+        print_operation_status("Add Attack #" + to_string(i), curr_val, expected_add, curr_noise, add_noise, status);
         if (overflow_add) break;
     }
 
@@ -238,10 +238,10 @@ int main() {
         try {
             decryptor.decrypt(attacked_sub, dec_attack_sub);
             curr_val = dec_attack_sub[0];
-            if (curr_val != expected_sub - (i * value2)) { status = "CORRUPTED"; overflow_sub = true; }
+            if (curr_val != expected_sub) { status = "CORRUPTED"; overflow_sub = true; }
             else if (curr_noise < sub_threshold) { status = "DANGER"; overflow_sub = true; }
         } catch (...) { status = "ERROR"; curr_val = 0; overflow_sub = true; }
-        print_operation_status("Sub Attack #" + to_string(i), curr_val, expected_sub - (i * value2), curr_noise, sub_noise, status);
+        print_operation_status("Sub Attack #" + to_string(i), curr_val, expected_sub, curr_noise, sub_noise, status);
         if (overflow_sub) break;
     }
     

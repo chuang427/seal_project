@@ -138,14 +138,17 @@ int main() {
         Ciphertext attacked_div = div_result;
         uint64_t expected_div = div_value;
         bool overflow_div = false;
-        for (int i = 1; i <= 100; i += 5) {
-            for (int j = 0; j < 5 && !overflow_div; j++) {
-                try {
-                    evaluator.multiply_inplace(attacked_div, encrypted2_inv);
-                } catch (...) {
-                    overflow_div = true;
-                    break;
-                }
+        // Encrypt 1 for noise injection (division by 1)
+        Plaintext one_plain;
+        one_plain.resize(8192);
+        one_plain[0] = 1;
+        Ciphertext encrypted_one;
+        encryptor.encrypt(one_plain, encrypted_one);
+        for (int i = 1; i <= 100; i++) {
+            try {
+                evaluator.multiply_inplace(attacked_div, encrypted_one);
+            } catch (...) {
+                overflow_div = true;
             }
             Plaintext dec_attack_div;
             string status = "OK";
@@ -159,7 +162,7 @@ int main() {
                 else if (curr_noise < div_threshold) { status = "DANGER"; overflow_div = true; }
             } catch (...) { status = "ERROR"; curr_val = 0; overflow_div = true; }
             print_operation_status("Div Attack #" + to_string(i), curr_val, expected_div, curr_noise, div_noise, status);
-            if (overflow_div) break;
+            if (overflow_div && i >= 5) break;
         }
     } else {
         cout << "Division by 10 not possible (no modular inverse in this modulus)." << endl;
@@ -176,10 +179,8 @@ int main() {
     attack_plain[0] = 1;
     Ciphertext attack_value;
     encryptor.encrypt(attack_plain, attack_value);
-    for (int i = 1; i <= 100; i += 5) {
-        for (int j = 0; j < 5 && !overflow_mult; j++) {
-            try { evaluator.multiply_inplace(attacked_mult, attack_value); } catch (...) { overflow_mult = true; break; }
-        }
+    for (int i = 1; i <= 100; i++) {
+        try { evaluator.multiply_inplace(attacked_mult, attack_value); } catch (...) { overflow_mult = true; }
         Plaintext dec_attack_mult;
         string status = "OK";
         uint64_t curr_val = 0;
@@ -192,58 +193,10 @@ int main() {
             else if (curr_noise < mult_threshold) { status = "DANGER"; overflow_mult = true; }
         } catch (...) { status = "ERROR"; curr_val = 0; overflow_mult = true; }
         print_operation_status("Mult Attack #" + to_string(i), curr_val, expected_mult, curr_noise, mult_noise, status);
-        if (overflow_mult) break;
+        if (overflow_mult && i >= 5) break;
     }
 
-    // --- Simulated Attack: Addition ---
-    cout << "\nPhase 2: Attack Simulation (Addition)" << endl;
-    cout << string(100, '-') << endl;
-    Ciphertext attacked_add = add_result;
-    uint64_t expected_add = add_value;
-    bool overflow_add = false;
-    for (int i = 1; i <= 100; i += 5) {
-        for (int j = 0; j < 5 && !overflow_add; j++) {
-            try { evaluator.add_inplace(attacked_add, encrypted2); } catch (...) { overflow_add = true; break; }
-        }
-        Plaintext dec_attack_add;
-        string status = "OK";
-        uint64_t curr_val = 0;
-        int curr_noise = 0;
-        try { curr_noise = decryptor.invariant_noise_budget(attacked_add); } catch (...) { curr_noise = 0; }
-        try {
-            decryptor.decrypt(attacked_add, dec_attack_add);
-            curr_val = dec_attack_add[0];
-            if (curr_val != expected_add) { status = "CORRUPTED"; overflow_add = true; }
-            else if (curr_noise < add_threshold) { status = "DANGER"; overflow_add = true; }
-        } catch (...) { status = "ERROR"; curr_val = 0; overflow_add = true; }
-        print_operation_status("Add Attack #" + to_string(i), curr_val, expected_add, curr_noise, add_noise, status);
-        if (overflow_add) break;
-    }
 
-    // --- Simulated Attack: Subtraction ---
-    cout << "\nPhase 2: Attack Simulation (Subtraction)" << endl;
-    cout << string(100, '-') << endl;
-    Ciphertext attacked_sub = sub_result;
-    uint64_t expected_sub = sub_value;
-    bool overflow_sub = false;
-    for (int i = 1; i <= 100; i += 5) {
-        for (int j = 0; j < 5 && !overflow_sub; j++) {
-            try { evaluator.sub_inplace(attacked_sub, encrypted2); } catch (...) { overflow_sub = true; break; }
-        }
-        Plaintext dec_attack_sub;
-        string status = "OK";
-        uint64_t curr_val = 0;
-        int curr_noise = 0;
-        try { curr_noise = decryptor.invariant_noise_budget(attacked_sub); } catch (...) { curr_noise = 0; }
-        try {
-            decryptor.decrypt(attacked_sub, dec_attack_sub);
-            curr_val = dec_attack_sub[0];
-            if (curr_val != expected_sub) { status = "CORRUPTED"; overflow_sub = true; }
-            else if (curr_noise < sub_threshold) { status = "DANGER"; overflow_sub = true; }
-        } catch (...) { status = "ERROR"; curr_val = 0; overflow_sub = true; }
-        print_operation_status("Sub Attack #" + to_string(i), curr_val, expected_sub, curr_noise, sub_noise, status);
-        if (overflow_sub) break;
-    }
     
     cout << "\nNoise Budget Analysis:" << endl;
     cout << "1. Initial noise budget: " << initial_noise << " bits" << endl;
